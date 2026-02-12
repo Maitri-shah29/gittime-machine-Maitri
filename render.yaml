@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: gittime-machine
+    env: node
+    region: oregon
+    plan: free
+    branch: main
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: GITTIME_BACKEND_URL
+        sync: false
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: NODE_VERSION
+        value: 20.11.0

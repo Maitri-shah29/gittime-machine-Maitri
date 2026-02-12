@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { GitGraph, ArrowLeft, Github, BrainCircuit } from "lucide-react";
+import { GitGraph, ArrowLeft, Github, BrainCircuit, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -27,6 +27,12 @@ export function Sidebar({ owner, repo }: SidebarProps) {
             href: `${baseUrl}/semantic-graph`,
             icon: BrainCircuit,
             active: pathname === `${baseUrl}/semantic-graph`,
+        },
+        {
+            name: "AI Features",
+            href: `${baseUrl}/ai-features`,
+            icon: Sparkles,
+            active: pathname === `${baseUrl}/ai-features`,
         },
     ];
 

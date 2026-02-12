@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Github, ArrowRight, GitGraph, BrainCircuit } from "lucide-react";
+import { Github, ArrowRight, GitGraph, BrainCircuit, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -80,7 +80,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-16 max-w-4xl mx-auto"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-16 max-w-6xl mx-auto"
         >
           <div className="p-6 rounded-2xl border border-border bg-card/50 backdrop-blur-sm hover:border-primary/50 transition-colors">
             <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 mx-auto sm:mx-0">
@@ -99,6 +99,16 @@ export default function Home() {
             <h3 className="text-xl font-semibold mb-2">Semantic Graph</h3>
             <p className="text-muted-foreground">
               Fast regex-based analysis of code imports and dependencies.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-2xl border border-border bg-card/50 backdrop-blur-sm hover:border-primary/50 transition-colors">
+            <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 mx-auto sm:mx-0">
+              <Sparkles className="h-6 w-6 text-primary" />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">AI Features</h3>
+            <p className="text-muted-foreground">
+              AI-powered feature discovery, version timelines, and commit evolution tracking.
             </p>
           </div>
         </motion.div>
