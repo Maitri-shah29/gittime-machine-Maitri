@@ -20,7 +20,7 @@ export default function SemanticGraphPage() {
     const analyze = async () => {
         setLoading(true);
         setError(null);
-        setStatus("Initializing analysis with Groq...");
+        setStatus("Initializing regex-based analysis...");
 
         try {
             const res = await fetch('/api/analyze', {
@@ -54,7 +54,7 @@ export default function SemanticGraphPage() {
                         Semantic Graph
                     </h1>
                     <p className="text-muted-foreground mt-1">
-                        AI-powered analysis of high-level concepts using <strong>Groq (Llama 3)</strong>.
+                        Fast regex-based analysis of code imports and dependencies.
                     </p>
                 </div>
                 <div className="flex items-center gap-4">
@@ -81,9 +81,9 @@ export default function SemanticGraphPage() {
                     <BrainCircuit className="h-16 w-16 text-muted-foreground/50 mb-4" />
                     <p className="text-muted-foreground font-medium">No analysis data yet.</p>
                     <p className="text-xs text-muted-foreground mt-2 max-w-md text-center">
-                        Powered by Groq LPU™ Inference Engine. Extremely fast concept extraction.
+                        Powered by regex pattern matching. Fast and efficient import extraction.
                         <br />
-                        Ensure <code>GROQ_API_KEY</code> is set in your env.
+                        No API key required.
                     </p>
                 </div>
             )}
@@ -91,8 +91,8 @@ export default function SemanticGraphPage() {
             {loading && !data && (
                 <div className="flex-1 flex flex-col items-center justify-center border border-dashed rounded-lg bg-muted/20">
                     <Loader2 className="h-12 w-12 text-primary animate-spin mb-4" />
-                    <p className="text-muted-foreground">Analyzing repository code via Groq...</p>
-                    <p className="text-xs text-muted-foreground mt-2">This should be blazing fast.</p>
+                    <p className="text-muted-foreground">Analyzing repository code with regex...</p>
+                    <p className="text-xs text-muted-foreground mt-2">This should be fast and efficient.</p>
                 </div>
             )}
 
