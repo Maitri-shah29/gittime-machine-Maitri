@@ -30,13 +30,13 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-background p-4 relative overflow-hidden">
+    <main className="flex min-h-screen flex-col items-center justify-center bg-background p-4 sm:p-6 lg:p-8 relative overflow-hidden">
       {/* Background Decor */}
       <div className="absolute inset-0 w-full h-full bg-[linear-gradient(to_right,hsl(var(--border))_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border))_1px,transparent_1px)] bg-[size:32px_32px] opacity-30"></div>
       <div className="absolute left-0 right-0 top-0 -z-10 m-auto h-[400px] w-[400px] rounded-full bg-purple-400/30 blur-[120px]"></div>
       <div className="absolute left-1/4 bottom-0 -z-10 h-[300px] w-[300px] rounded-full bg-purple-500/20 blur-[100px]"></div>
 
-      <div className="z-10 w-full max-w-3xl text-center space-y-8">
+      <div className="z-10 w-full max-w-7xl text-center space-y-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -86,42 +86,47 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-16 max-w-6xl mx-auto"
+          className="w-full max-w-7xl mx-auto mt-16"
         >
-          <div className="group p-8 rounded-2xl border border-border/50 bg-card/80 backdrop-blur-sm hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 transition-all hover:-translate-y-1">
-            <div className="h-14 w-14 rounded-xl bg-purple-400/20 flex items-center justify-center mb-5 mx-auto sm:mx-0 group-hover:scale-110 transition-transform">
-              <GitGraph className="h-7 w-7 text-primary" />
+          <div className="flex flex-col lg:flex-row gap-6 justify-between items-stretch">
+            <div className="group flex-1 p-8 rounded-2xl border border-border/50 bg-card/80 backdrop-blur-sm hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 transition-all hover:-translate-y-1">
+              <div className="h-14 w-14 rounded-xl bg-purple-400/20 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                <GitGraph className="h-7 w-7 text-primary" />
+              </div>
+              <h3 className="text-xl font-bold mb-3 flex items-center gap-2 flex-wrap">
+                Commit Graph
+                <span className="text-xs font-mono text-primary bg-primary/10 px-2 py-0.5 rounded">git log</span>
+              </h3>
+              <p className="text-muted-foreground leading-relaxed">
+                Interactive visualization of branches, merges, and commit history over time with detailed timeline analysis.
+              </p>
             </div>
-            <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
-              Commit Graph
-              <span className="text-xs font-mono text-primary bg-primary/10 px-2 py-0.5 rounded">git log</span>
-            </h3>
-            <p className="text-muted-foreground leading-relaxed">
-              Interactive visualization of branches, merges, and commit history over time with detailed timeline analysis.
-            </p>
-          </div>
 
-          <div className="group p-8 rounded-2xl border border-border/50 bg-card/80 backdrop-blur-sm hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 transition-all hover:-translate-y-1">
-            <div className="h-14 w-14 rounded-xl bg-purple-500/20 flex items-center justify-center mb-5 mx-auto sm:mx-0 group-hover:scale-110 transition-transform">
-              <BrainCircuit className="h-7 w-7 text-purple-500" />
+            <div className="group flex-1 p-8 rounded-2xl border border-border/50 bg-card/80 backdrop-blur-sm hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 transition-all hover:-translate-y-1">
+              <div className="h-14 w-14 rounded-xl bg-purple-500/20 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                <BrainCircuit className="h-7 w-7 text-purple-500" />
+              </div>
+              <h3 className="text-xl font-bold mb-3 flex items-center gap-2 flex-wrap">
+                Dependency Graph
+                <span className="text-xs font-mono text-purple-500 bg-purple-500/10 px-2 py-0.5 rounded">imports</span>
+              </h3>
+              <p className="text-muted-foreground leading-relaxed">
+                Fast regex-based analysis of code imports and dependencies with visual relationship mapping.
+              </p>
             </div>
-            <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
-              Dependency Graph
-              <span className="text-xs font-mono text-purple-500 bg-purple-500/10 px-2 py-0.5 rounded">imports</span>
-            </h3>
-            <p className="text-muted-foreground leading-relaxed">
-              Fast regex-based analysis of code imports and dependencies with visual relationship mapping.
-            </p>
-          </div>
 
-          <div className="p-6 rounded-2xl border border-border bg-card/50 backdrop-blur-sm hover:border-primary/50 transition-colors">
-            <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 mx-auto sm:mx-0">
-              <Sparkles className="h-6 w-6 text-primary" />
+            <div className="group flex-1 p-8 rounded-2xl border border-border/50 bg-card/80 backdrop-blur-sm hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 transition-all hover:-translate-y-1">
+              <div className="h-14 w-14 rounded-xl bg-primary/20 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                <Sparkles className="h-7 w-7 text-primary" />
+              </div>
+              <h3 className="text-xl font-bold mb-3 flex items-center gap-2 flex-wrap">
+                AI Features
+                <span className="text-xs font-mono text-primary bg-primary/10 px-2 py-0.5 rounded">powered</span>
+              </h3>
+              <p className="text-muted-foreground leading-relaxed">
+                AI-powered feature discovery, version timelines, and commit evolution tracking.
+              </p>
             </div>
-            <h3 className="text-xl font-semibold mb-2">AI Features</h3>
-            <p className="text-muted-foreground">
-              AI-powered feature discovery, version timelines, and commit evolution tracking.
-            </p>
           </div>
         </motion.div>
       </div>
