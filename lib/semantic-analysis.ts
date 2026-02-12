@@ -1,6 +1,5 @@
 
 import { Octokit } from "octokit";
-import { generateCompletion } from "./groq";
 import { SimulationNodeDatum } from 'd3';
 
 const octokit = new Octokit({
@@ -28,16 +27,111 @@ export interface SemanticGraphData {
     links: SemanticEdge[];
 }
 
-// Helper to chunk file content
-function chunkContent(content: string, maxLines: number = 200): string[] {
-    const lines = content.split('\n');
-    const chunks: string[] = [];
+// Helper to extract local imports using regex patterns
+function extractLocalImports(content: string, filePath: string): string[] {
+    const imports: string[] = [];
+    const fileExt = filePath.split('.').pop()?.toLowerCase();
 
-    for (let i = 0; i < lines.length; i += maxLines) {
-        chunks.push(lines.slice(i, i + maxLines).join('\n'));
+    if (fileExt === 'ts' || fileExt === 'tsx' || fileExt === 'js' || fileExt === 'jsx') {
+        // TypeScript/JavaScript imports
+        // Match ES6 imports: import ... from "..." or import ... from '...'
+        const es6ImportRegex = /import\s+(?:[\w*{}\s,]+\s+from\s+)?['"](.*?)['"]/g;
+        let match;
+        while ((match = es6ImportRegex.exec(content)) !== null) {
+            const importPath = match[1];
+            if (isLocalImport(importPath)) {
+                imports.push(importPath);
+            }
+        }
+
+        // Match CommonJS require: require("...") or require('...')
+        const requireRegex = /require\s*\(\s*['"](.*?)['"]\s*\)/g;
+        while ((match = requireRegex.exec(content)) !== null) {
+            const importPath = match[1];
+            if (isLocalImport(importPath)) {
+                imports.push(importPath);
+            }
+        }
+
+        // Match dynamic imports: import("...") or import('...')
+        const dynamicImportRegex = /import\s*\(\s*['"](.*?)['"]\s*\)/g;
+        while ((match = dynamicImportRegex.exec(content)) !== null) {
+            const importPath = match[1];
+            if (isLocalImport(importPath)) {
+                imports.push(importPath);
+            }
+        }
+    } else if (fileExt === 'py') {
+        // Python imports: from ... import ... or import ...
+        const pythonFromImportRegex = /from\s+([.\w]+)\s+import/g;
+        let match;
+        while ((match = pythonFromImportRegex.exec(content)) !== null) {
+            const importPath = match[1];
+            if (importPath.startsWith('.')) {
+                imports.push(importPath);
+            }
+        }
+
+        const pythonImportRegex = /^import\s+([.\w]+)/gm;
+        while ((match = pythonImportRegex.exec(content)) !== null) {
+            const importPath = match[1];
+            if (importPath.startsWith('.')) {
+                imports.push(importPath);
+            }
+        }
+    } else if (fileExt === 'java') {
+        // Java imports (local packages only, detect project packages)
+        const javaImportRegex = /import\s+([\w.]+);/g;
+        let match;
+        while ((match = javaImportRegex.exec(content)) !== null) {
+            const importPath = match[1];
+            // Filter out standard library imports
+            if (!importPath.startsWith('java.') && !importPath.startsWith('javax.') && 
+                !importPath.startsWith('org.junit') && !importPath.startsWith('org.springframework')) {
+                imports.push(importPath);
+            }
+        }
+    } else if (fileExt === 'go') {
+        // Go imports
+        const goImportRegex = /import\s+(?:"([^"]+)"|[\s\S]*?"([^"]+)")/g;
+        let match;
+        while ((match = goImportRegex.exec(content)) !== null) {
+            const importPath = match[1] || match[2];
+            // Only local imports (usually contain project name or start with .)
+            if (importPath.startsWith('.') || (!importPath.includes('github.com') && !importPath.includes('golang.org'))) {
+                imports.push(importPath);
+            }
+        }
+    } else if (fileExt === 'rs') {
+        // Rust imports
+        const rustUseRegex = /use\s+(?:crate|super|self)::([\w:]+)/g;
+        let match;
+        while ((match = rustUseRegex.exec(content)) !== null) {
+            imports.push(match[1]);
+        }
     }
 
-    return chunks;
+    return [...new Set(imports)]; // Return unique imports
+}
+
+// Helper to determine if an import is local (not an external package)
+function isLocalImport(importPath: string): boolean {
+    // Check if it's a relative import
+    if (importPath.startsWith('./') || importPath.startsWith('../')) {
+        return true;
+    }
+    // Check if it's an alias import (common patterns)
+    if (importPath.startsWith('@/') || importPath.startsWith('~/') || importPath.startsWith('@')) {
+        return true;
+    }
+    // Exclude common external packages
+    const commonExternals = [
+        'react', 'next', 'vue', 'angular', 'express', 'axios', 'lodash',
+        'moment', 'zod', 'yup', 'fs', 'path', 'http', 'https', 'crypto',
+        'util', 'os', 'stream', 'events', 'buffer'
+    ];
+    
+    return !commonExternals.some(ext => importPath === ext || importPath.startsWith(ext + '/'));
 }
 
 export async function analyzeRepositorySemantics(owner: string, repo: string, onProgress?: (msg: string) => void): Promise<SemanticGraphData> {
@@ -71,12 +165,10 @@ export async function analyzeRepositorySemantics(owner: string, repo: string, on
             !f.path.includes('.d.ts')
         ).slice(0, 20); // Analyzing top 20 files for demo speed
 
-        if (onProgress) onProgress(`Found ${relevantFiles.length} relevant files. Analysis started with Groq (Llama 3)...`);
+        if (onProgress) onProgress(`Found ${relevantFiles.length} relevant files. Starting regex-based import analysis...`);
 
         // 2. Process each file
-        // With Groq we can go faster, maybe parallelize a bit more? 
-        // Let's do batches of 3
-        const BATCH_SIZE = 3;
+        const BATCH_SIZE = 5;
         for (let i = 0; i < relevantFiles.length; i += BATCH_SIZE) {
             const batch = relevantFiles.slice(i, i + BATCH_SIZE);
             await Promise.all(batch.map(async (file: any) => {
@@ -91,78 +183,43 @@ export async function analyzeRepositorySemantics(owner: string, repo: string, on
                     });
                     const content = Buffer.from(contentResponse.data.content, 'base64').toString();
 
-                    // Chunk if necessary (simplified for prompt)
-                    const chunks = chunkContent(content);
-                    const chunk = chunks[0]; // Analyze only first chunk for speed in MVP
+                    // Extract imports using regex
+                    const imports = extractLocalImports(content, file.path);
 
-                    // 3. LLM Extraction
-                    const prompt = `
-                    Analyze the following code file: "${file.path}".
-                    Extract ALL local file imports/dependencies.
-                    Ignore external libraries (like "react", "next", "zod").
-                    Focus on relative imports (starts with "./", "../") or aliases ("@/").
-                    
-                    Return ONLY valid JSON:
-                    {
-                        "imports": [
-                            "../components/button",
-                            "@/lib/utils"
-                        ]
+                    // Create node for the current file
+                    if (!nodesMap.has(file.path)) {
+                        nodesMap.set(file.path, {
+                            id: file.path,
+                            label: file.path.split('/').pop() || file.path,
+                            type: 'File',
+                            description: file.path,
+                            fileSources: [file.path],
+                            size: 10
+                        });
                     }
-                    
-                    Code preview:
-                    ${chunk.substring(0, 4000)}
-                    `;
 
-                    const response = await generateCompletion(prompt);
-                    // Clean response string (remove potential Markdown backticks)
-                    const jsonStr = response.replace(/```json/g, '').replace(/```/g, '').trim();
+                    // Create nodes and edges for imports
+                    imports.forEach((imp: string) => {
+                        let target = imp;
 
-                    try {
-                        const result = JSON.parse(jsonStr);
-
-                        // Create node for the current file
-                        if (!nodesMap.has(file.path)) {
-                            nodesMap.set(file.path, {
-                                id: file.path,
-                                label: file.path.split('/').pop() || file.path,
+                        if (!nodesMap.has(target)) {
+                            nodesMap.set(target, {
+                                id: target,
+                                label: target.split('/').pop() || target,
                                 type: 'File',
-                                description: 'Source File',
-                                fileSources: [file.path],
-                                size: 10
+                                description: target,
+                                fileSources: [],
+                                size: 8
                             });
                         }
 
-                        if (result.imports && Array.isArray(result.imports)) {
-                            result.imports.forEach((imp: string) => {
-                                // Simple resolution attempt
-                                let target = imp;
-
-                                // We can try to match it to existing known files if possible, 
-                                // but for now let's just create a node for the target so it shows up.
-
-                                if (!nodesMap.has(target)) {
-                                    nodesMap.set(target, {
-                                        id: target,
-                                        label: target.split('/').pop() || target,
-                                        type: 'File',
-                                        description: 'Imported File',
-                                        fileSources: [],
-                                        size: 8
-                                    });
-                                }
-
-                                edges.push({
-                                    source: file.path,
-                                    target: target,
-                                    relationship: 'imports',
-                                    value: 1
-                                });
-                            });
-                        }
-                    } catch (e) {
-                        console.error(`Failed to parse JSON for ${file.path}: ${response}`, e);
-                    }
+                        edges.push({
+                            source: target,
+                            target: file.path,
+                            relationship: 'imports',
+                            value: 1
+                        });
+                    });
                 } catch (e) {
                     console.error(`Error processing ${file.path}:`, e);
                 }

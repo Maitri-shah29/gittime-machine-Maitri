@@ -98,7 +98,7 @@ export default function Home() {
             </div>
             <h3 className="text-xl font-semibold mb-2">Semantic Graph</h3>
             <p className="text-muted-foreground">
-              AI-powered analysis of high-level concepts using <strong>Groq API</strong>.
+              Fast regex-based analysis of code imports and dependencies.
             </p>
           </div>
         </motion.div>
