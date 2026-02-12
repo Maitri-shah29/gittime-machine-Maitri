@@ -1,6 +1,6 @@
 import { getAllCommits } from "@/lib/github";
 import { CommitGraph } from "@/components/commit-graph";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, GitGraph } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default async function CommitHistoryPage({
@@ -21,20 +21,29 @@ export default async function CommitHistoryPage({
 
     return (
         <div className="space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold tracking-tight">Project Timeline</h1>
-                <p className="text-muted-foreground">
-                    Visualizing commit history for {owner}/{repo}
+            <div className="border-b border-border/50 pb-6">
+                <div className="flex items-center gap-3 mb-2">
+                    <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <GitGraph className="h-5 w-5 text-primary" />
+                    </div>
+                    <h1 className="text-4xl font-bold tracking-tight">Project Timeline</h1>
+                </div>
+                <p className="text-muted-foreground ml-13 font-mono text-sm">
+                    <span className="text-primary">$</span> git log --all --graph <span className="text-muted-foreground/50">//</span> <span className="font-sans">{owner}/{repo}</span>
                 </p>
             </div>
 
             {error === "API Rate Limit Exceeded" && (
-                <Alert variant="destructive">
+                <Alert variant="destructive" className="border-destructive/50 bg-destructive/10">
                     <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>API Rate Limit Exceeded</AlertTitle>
-                    <AlertDescription>
+                    <AlertTitle className="font-semibold">API Rate Limit Exceeded</AlertTitle>
+                    <AlertDescription className="mt-2">
                         You have hit the GitHub API rate limit (60 requests/hour for unauthenticated users).
-                        To fix this, create a `.env.local` file with `GITHUB_TOKEN=your_token_here`.
+                        <br />
+                        <code className="mt-2 block bg-background/50 p-2 rounded text-xs font-mono border border-border/50">
+                            GITHUB_TOKEN=your_token_here
+                        </code>
+                        <span className="text-xs mt-2 block">Add this to your <code>.env.local</code> file.</span>
                     </AlertDescription>
                 </Alert>
             )}

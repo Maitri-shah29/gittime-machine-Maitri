@@ -32,8 +32,9 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-background p-4 relative overflow-hidden">
       {/* Background Decor */}
-      <div className="absolute inset-0 w-full h-full bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-      <div className="absolute left-0 right-0 top-0 -z-10 m-auto h-[310px] w-[310px] rounded-full bg-primary/20 blur-[100px]"></div>
+      <div className="absolute inset-0 w-full h-full bg-[linear-gradient(to_right,hsl(var(--border))_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border))_1px,transparent_1px)] bg-[size:32px_32px] opacity-30"></div>
+      <div className="absolute left-0 right-0 top-0 -z-10 m-auto h-[400px] w-[400px] rounded-full bg-purple-400/30 blur-[120px]"></div>
+      <div className="absolute left-1/4 bottom-0 -z-10 h-[300px] w-[300px] rounded-full bg-purple-500/20 blur-[100px]"></div>
 
       <div className="z-10 w-full max-w-3xl text-center space-y-8">
         <motion.div
@@ -41,15 +42,16 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="mx-auto w-fit rounded-full border border-border bg-background/50 px-4 py-1.5 text-sm font-medium text-muted-foreground backdrop-blur-sm mb-6">
-            🚀 Visualize your repository history & architecture
+          <div className="mx-auto w-fit rounded-full border border-primary/30 bg-primary/10 px-5 py-2 text-sm font-semibold text-primary backdrop-blur-sm mb-6 shadow-lg shadow-primary/10">
+            <span className="terminal-effect">$ git-timemachine --init</span>
           </div>
-          <h1 className="text-4xl font-bold tracking-tight sm:text-6xl text-foreground">
+          <h1 className="text-5xl font-black tracking-tight sm:text-7xl text-foreground">
             Git Time Machine
           </h1>
-          <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-2xl mx-auto">
-            Travel through your commit history and uncover the hidden structure of your backend dependencies.
-            Visualize code evolution like never before.
+          <p className="mt-6 text-xl leading-8 text-muted-foreground max-w-2xl mx-auto font-light">
+            Travel through your <span className="text-primary font-semibold">commit history</span> and uncover the hidden structure of your <span className="text-primary font-semibold">dependencies</span>.
+            <br />
+            <span className="text-sm mt-2 block">Visualize code evolution with GitHub-powered analytics.</span>
           </p>
         </motion.div>
 
@@ -58,21 +60,25 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <form onSubmit={handleAnalyze} className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
-            <Input
-              type="url"
-              placeholder="https://github.com/owner/repo"
-              value={repoUrl}
-              onChange={(e) => setRepoUrl(e.target.value)}
-              className="h-12 text-base bg-background/80 backdrop-blur-sm"
-              required
-            />
-            <Button size="lg" className="h-12 px-8 font-semibold shadow-lg shadow-primary/20">
-              Analyze <ArrowRight className="ml-2 h-4 w-4" />
+          <form onSubmit={handleAnalyze} className="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto">
+            <div className="relative flex-1">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-mono text-sm">$</span>
+              <Input
+                type="url"
+                placeholder="https://github.com/owner/repo"
+                value={repoUrl}
+                onChange={(e) => setRepoUrl(e.target.value)}
+                className="h-14 pl-8 text-base bg-card/80 backdrop-blur-sm border-border/50 focus:border-primary shadow-lg font-mono"
+                required
+              />
+            </div>
+            <Button size="lg" className="h-14 px-10 font-semibold shadow-xl shadow-primary/30 hover:shadow-primary/50 transition-all">
+              Analyze <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </form>
-          <p className="mt-4 text-sm text-muted-foreground">
-            Try a public repository to get started.
+          <p className="mt-4 text-sm text-muted-foreground flex items-center justify-center gap-2">
+            <Github className="h-4 w-4" />
+            Try analyzing any public GitHub repository
           </p>
         </motion.div>
 
@@ -82,23 +88,29 @@ export default function Home() {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-16 max-w-6xl mx-auto"
         >
-          <div className="p-6 rounded-2xl border border-border bg-card/50 backdrop-blur-sm hover:border-primary/50 transition-colors">
-            <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 mx-auto sm:mx-0">
-              <GitGraph className="h-6 w-6 text-primary" />
+          <div className="group p-8 rounded-2xl border border-border/50 bg-card/80 backdrop-blur-sm hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 transition-all hover:-translate-y-1">
+            <div className="h-14 w-14 rounded-xl bg-purple-400/20 flex items-center justify-center mb-5 mx-auto sm:mx-0 group-hover:scale-110 transition-transform">
+              <GitGraph className="h-7 w-7 text-primary" />
             </div>
-            <h3 className="text-xl font-semibold mb-2">Commit Graph</h3>
-            <p className="text-muted-foreground">
-              Interactive visualization of branches, merges, and commit history over time.
+            <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
+              Commit Graph
+              <span className="text-xs font-mono text-primary bg-primary/10 px-2 py-0.5 rounded">git log</span>
+            </h3>
+            <p className="text-muted-foreground leading-relaxed">
+              Interactive visualization of branches, merges, and commit history over time with detailed timeline analysis.
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl border border-border bg-card/50 backdrop-blur-sm hover:border-primary/50 transition-colors">
-            <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 mx-auto sm:mx-0">
-              <BrainCircuit className="h-6 w-6 text-primary" />
+          <div className="group p-8 rounded-2xl border border-border/50 bg-card/80 backdrop-blur-sm hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 transition-all hover:-translate-y-1">
+            <div className="h-14 w-14 rounded-xl bg-purple-500/20 flex items-center justify-center mb-5 mx-auto sm:mx-0 group-hover:scale-110 transition-transform">
+              <BrainCircuit className="h-7 w-7 text-purple-500" />
             </div>
-            <h3 className="text-xl font-semibold mb-2">Semantic Graph</h3>
-            <p className="text-muted-foreground">
-              Fast regex-based analysis of code imports and dependencies.
+            <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
+              Dependency Graph
+              <span className="text-xs font-mono text-purple-500 bg-purple-500/10 px-2 py-0.5 rounded">imports</span>
+            </h3>
+            <p className="text-muted-foreground leading-relaxed">
+              Fast regex-based analysis of code imports and dependencies with visual relationship mapping.
             </p>
           </div>
 
