@@ -1,0 +1,19 @@
+# Backend Render Configuration (for GitTime AI)
+# Place this in the backend repository root
+
+services:
+  - type: web
+    name: gittime-ai-backend
+    env: python
+    region: oregon
+    plan: free
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: PYTHON_VERSION
+        value: 3.11.0

@@ -1,5 +1,38 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## GitTime Machine
+
+A time-travel visualization tool for Git repositories with AI-powered feature analysis.
+
+### Features
+
+- 🕐 **Commit Timeline Visualization** - Interactive timeline of repository commits
+- 🌳 **Semantic Graph Analysis** - AI-powered semantic relationships between code
+- 🤖 **GitTime AI Integration** - Advanced feature extraction and evolution tracking
+- 📊 **Interactive Dashboards** - Explore repository structure and history
+
+## GitTime AI Backend Integration
+
+This project can integrate with the [GitTime AI backend](https://github.com/Passive-Coder/gittime-ai) to provide advanced AI-powered repository analysis including:
+
+- **Feature Extraction** - Automatically identify distinct features in a codebase
+- **Version Timeline** - Track how features evolved across commits and releases
+- **Commit Evolution** - Detailed analysis of how each commit advanced a feature
+
+### Setup
+
+See [BACKEND_SETUP.md](./BACKEND_SETUP.md) for detailed instructions on setting up the Python backend.
+
+## Deployment
+
+This project can be deployed to Render (or Vercel for the frontend):
+
+- **[RENDER_DEPLOYMENT.md](./RENDER_DEPLOYMENT.md)** - Complete Render deployment guide
+- **[DEPLOYMENT_COMMANDS.md](./DEPLOYMENT_COMMANDS.md)** - Quick reference commands
+- **[render.yaml](./render.yaml)** - Ready-to-use Render configuration
+
+The free tier is available on Render with some limitations (15min spin-down). Upgrade to $7/month for always-on backend service.
+
 ## Getting Started
 
 First, run the development server:
