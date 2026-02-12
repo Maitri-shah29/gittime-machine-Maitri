@@ -181,7 +181,7 @@ export function SemanticGraph({ data }: SemanticGraphProps) {
 
                 {/* Legend */}
                 <div className="absolute top-4 left-4 bg-background/80 backdrop-blur p-2 rounded border text-xs space-y-1">
-                    <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-blue-500"></div> File</div>
+                    <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-purple-500"></div> File</div>
                 </div>
             </div>
 
